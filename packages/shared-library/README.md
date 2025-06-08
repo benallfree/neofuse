@@ -1,17 +1,18 @@
-# fuse-shared-library
+# neofuse-shared-library
+
 Cross-platform prebuilt FUSE libraries for OSX/Linux.
 
-This module will dynamically require either [fuse-shared-library-linux](https://github.com/fuse-friends/fuse-shared-library-linux) or [fuse-shared-library-darwin](https://github.com/fuse-friends/fuse-shared-library-darwin).
+This module will dynamically require either [neofuse-shared-library-linux](https://github.com/benallfree/neofuse) or [neofuse-shared-library-darwin](https://github.com/benallfree/neofuse).
 
 ## Installation
 ```
-npm i fuse-shared-library --save
+npm i neofuse-shared-library --save
 ```
 
 ## Usage
 
 ``` js
-const libfuse = require('fuse-shared-library')
+const libfuse = require('neofuse-shared-library')
 
 console.log(libfuse.lib) // path to the shared library
 console.log(libfuse.include) // path to the include folder
@@ -45,11 +46,11 @@ Using a GYP file this can be done like this:
     "target_name": "fuse_example",
     "include_dirs": [
       # include it like this
-      "<!(node -e \"require('fuse-shared-library/include')\")"
+      "<!(node -e \"require('neofuse-shared-library/include')\")"
     ],
     "libraries": [
       # link it like this
-      "<!(node -e \"require('fuse-shared-library/lib')\")"
+      "<!(node -e \"require('neofuse-shared-library/lib')\")"
     ],
     "sources": [
       "your_program.cc"
@@ -62,7 +63,7 @@ Using a GYP file this can be done like this:
     "dependencies": ["fuse_example"],
     "copies": [{
       "destination": "build/Release",
-      "files": [ "<!(node -e \"require('fuse-shared-library/lib')\")" ],
+      "files": [ "<!(node -e \"require('neofuse-shared-library/lib')\")" ],
     }]
   }]
 }

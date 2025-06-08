@@ -25,6 +25,6 @@ tar czf "$OUT/macfuse.fs.tgz" "."
 mv "$OUT/unpacked/Core.pkg/Payload/usr/local/include/fuse" "$OUT/include"
 cp "$OUT/unpacked/Core.pkg/Payload/usr/local/lib/libfuse.2.dylib" "$OUT/libfuse.2.dylib"
 
-rm -rf "$OUT/unpacked" "$OUT/macfuse-latest.dmg"
+rm -rf "$OUT/unpacked" "$OUT/macfuse-latest.dmg" "$OUT/macfuse.fs.tgz"
 
 install_name_tool -id "@loader_path/libfuse.2.dylib" "$OUT/libfuse.2.dylib"

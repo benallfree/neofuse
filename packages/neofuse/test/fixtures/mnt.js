@@ -2,8 +2,11 @@ var os = require('os')
 var path = require('path')
 var fs = require('fs')
 
-function create (opts = {}) {
-  var mnt = path.join(os.tmpdir(), 'fuse-bindings-' + process.pid + '-' + Date.now())
+function create(opts = {}) {
+  var mnt = path.join(
+    os.tmpdir(),
+    'neofuse-bindings-' + process.pid + '-' + Date.now()
+  )
 
   if (!opts.doNotCreate) {
     try {

@@ -1,9 +1,9 @@
-# fuse-shared-library-darwin
+# neofuse-shared-library-darwin
 
 A module containing the dylib needed to run FUSE on Mac (darwin).
 
 ```
-npm install fuse-shared-library-darwin
+npm install neofuse-shared-library-darwin
 ```
 
 Includes programmatic access to setup the kernel extension as well
@@ -12,7 +12,7 @@ as part of an install step.
 ## Usage
 
 ``` js
-const libfuse = require('fuse-shared-library-darwin')
+const libfuse = require('neofuse-shared-library-darwin')
 
 console.log(libfuse.lib) // path to the shared library
 console.log(libfuse.include) // path to the include folder
@@ -53,11 +53,11 @@ Using a GYP file this can be done like this:
     "target_name": "fuse_example",
     "include_dirs": [
       # include it like this
-      "<!(node -e \"require('fuse-shared-library-darwin/include')\")"
+      "<!(node -e \"require('neofuse-shared-library-darwin/include')\")"
     ],
     "libraries": [
       # link it like this
-      "<!(node -e \"require('fuse-shared-library-darwin/lib')\")"
+      "<!(node -e \"require('neofuse-shared-library-darwin/lib')\")"
     ],
     "sources": [
       "your_program.cc"
@@ -70,7 +70,7 @@ Using a GYP file this can be done like this:
     "dependencies": ["fuse_example"],
     "copies": [{
       "destination": "build/Release",
-      "files": [ "<!(node -e \"require('fuse-shared-library-darwin/lib')\")" ],
+      "files": [ "<!(node -e \"require('neofuse-shared-library-darwin/lib')\")" ],
     }]
   }]
 }

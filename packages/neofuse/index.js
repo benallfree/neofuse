@@ -4,141 +4,250 @@ const path = require('path')
 const { exec } = require('child_process')
 
 const Nanoresource = require('nanoresource')
-const { beforeMount, beforeUnmount, configure, unconfigure, isConfigured } = require('fuse-shared-library')
+const {
+  beforeMount,
+  beforeUnmount,
+  configure,
+  unconfigure,
+  isConfigured,
+} = require('neofuse-shared-library')
 
 const binding = require('node-gyp-build')(__dirname)
 
 const IS_OSX = os.platform() === 'darwin'
-const OSX_FOLDER_ICON = '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericFolderIcon.icns'
+const OSX_FOLDER_ICON =
+  '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericFolderIcon.icns'
 const HAS_FOLDER_ICON = IS_OSX && fs.existsSync(OSX_FOLDER_ICON)
 const DEFAULT_TIMEOUT = 15 * 1000
 const TIMEOUT_ERRNO = IS_OSX ? -60 : -110
 const ENOTCONN = IS_OSX ? -57 : -107
 
 const OpcodesAndDefaults = new Map([
-  ['init', {
-    op: binding.op_init
-  }],
-  ['error', {
-    op: binding.op_error
-  }],
-  ['access', {
-    op: binding.op_access,
-    defaults: [0]
-  }],
-  ['statfs', {
-    op: binding.op_statfs,
-    defaults: [getStatfsArray()]
-  }],
-  ['fgetattr', {
-    op: binding.op_fgetattr,
-    defaults: [getStatArray()]
-  }],
-  ['getattr', {
-    op: binding.op_getattr,
-    defaults: [getStatArray()]
-  }],
-  ['flush', {
-    op: binding.op_flush
-  }],
-  ['fsync', {
-    op: binding.op_fsync
-  }],
-  ['fsyncdir', {
-    op: binding.op_fsyncdir
-  }],
-  ['readdir', {
-    op: binding.op_readdir,
-    defaults: [[], []]
-  }],
-  ['truncate', {
-    op: binding.op_truncate
-  }],
-  ['ftruncate', {
-    op: binding.op_ftruncate
-  }],
-  ['utimens', {
-    op: binding.op_utimens
-  }],
-  ['readlink', {
-    op: binding.op_readlink,
-    defaults: ['']
-  }],
-  ['chown', {
-    op: binding.op_chown
-  }],
-  ['chmod', {
-    op: binding.op_chmod
-  }],
-  ['mknod', {
-    op: binding.op_mknod
-  }],
-  ['setxattr', {
-    op: binding.op_setxattr
-  }],
-  ['getxattr', {
-    op: binding.op_getxattr
-  }],
-  ['listxattr', {
-    op: binding.op_listxattr
-  }],
-  ['removexattr', {
-    op: binding.op_removexattr
-  }],
-  ['open', {
-    op: binding.op_open,
-    defaults: [0]
-  }],
-  ['opendir', {
-    op: binding.op_opendir,
-    defaults: [0]
-  }],
-  ['read', {
-    op: binding.op_read,
-    defaults: [0]
-  }],
-  ['write', {
-    op: binding.op_write,
-    defaults: [0]
-  }],
-  ['release', {
-    op: binding.op_release
-  }],
-  ['releasedir', {
-    op: binding.op_releasedir
-  }],
-  ['create', {
-    op: binding.op_create,
-    defaults: [0]
-  }],
-  ['unlink', {
-    op: binding.op_unlink
-  }],
-  ['rename', {
-    op: binding.op_rename
-  }],
-  ['link', {
-    op: binding.op_link
-  }],
-  ['symlink', {
-    op: binding.op_symlink
-  }],
-  ['mkdir', {
-    op: binding.op_mkdir
-  }],
-  ['rmdir', {
-    op: binding.op_rmdir
-  }]
+  [
+    'init',
+    {
+      op: binding.op_init,
+    },
+  ],
+  [
+    'error',
+    {
+      op: binding.op_error,
+    },
+  ],
+  [
+    'access',
+    {
+      op: binding.op_access,
+      defaults: [0],
+    },
+  ],
+  [
+    'statfs',
+    {
+      op: binding.op_statfs,
+      defaults: [getStatfsArray()],
+    },
+  ],
+  [
+    'fgetattr',
+    {
+      op: binding.op_fgetattr,
+      defaults: [getStatArray()],
+    },
+  ],
+  [
+    'getattr',
+    {
+      op: binding.op_getattr,
+      defaults: [getStatArray()],
+    },
+  ],
+  [
+    'flush',
+    {
+      op: binding.op_flush,
+    },
+  ],
+  [
+    'fsync',
+    {
+      op: binding.op_fsync,
+    },
+  ],
+  [
+    'fsyncdir',
+    {
+      op: binding.op_fsyncdir,
+    },
+  ],
+  [
+    'readdir',
+    {
+      op: binding.op_readdir,
+      defaults: [[], []],
+    },
+  ],
+  [
+    'truncate',
+    {
+      op: binding.op_truncate,
+    },
+  ],
+  [
+    'ftruncate',
+    {
+      op: binding.op_ftruncate,
+    },
+  ],
+  [
+    'utimens',
+    {
+      op: binding.op_utimens,
+    },
+  ],
+  [
+    'readlink',
+    {
+      op: binding.op_readlink,
+      defaults: [''],
+    },
+  ],
+  [
+    'chown',
+    {
+      op: binding.op_chown,
+    },
+  ],
+  [
+    'chmod',
+    {
+      op: binding.op_chmod,
+    },
+  ],
+  [
+    'mknod',
+    {
+      op: binding.op_mknod,
+    },
+  ],
+  [
+    'setxattr',
+    {
+      op: binding.op_setxattr,
+    },
+  ],
+  [
+    'getxattr',
+    {
+      op: binding.op_getxattr,
+    },
+  ],
+  [
+    'listxattr',
+    {
+      op: binding.op_listxattr,
+    },
+  ],
+  [
+    'removexattr',
+    {
+      op: binding.op_removexattr,
+    },
+  ],
+  [
+    'open',
+    {
+      op: binding.op_open,
+      defaults: [0],
+    },
+  ],
+  [
+    'opendir',
+    {
+      op: binding.op_opendir,
+      defaults: [0],
+    },
+  ],
+  [
+    'read',
+    {
+      op: binding.op_read,
+      defaults: [0],
+    },
+  ],
+  [
+    'write',
+    {
+      op: binding.op_write,
+      defaults: [0],
+    },
+  ],
+  [
+    'release',
+    {
+      op: binding.op_release,
+    },
+  ],
+  [
+    'releasedir',
+    {
+      op: binding.op_releasedir,
+    },
+  ],
+  [
+    'create',
+    {
+      op: binding.op_create,
+      defaults: [0],
+    },
+  ],
+  [
+    'unlink',
+    {
+      op: binding.op_unlink,
+    },
+  ],
+  [
+    'rename',
+    {
+      op: binding.op_rename,
+    },
+  ],
+  [
+    'link',
+    {
+      op: binding.op_link,
+    },
+  ],
+  [
+    'symlink',
+    {
+      op: binding.op_symlink,
+    },
+  ],
+  [
+    'mkdir',
+    {
+      op: binding.op_mkdir,
+    },
+  ],
+  [
+    'rmdir',
+    {
+      op: binding.op_rmdir,
+    },
+  ],
 ])
 
 class Fuse extends Nanoresource {
-  constructor (mnt, ops, opts = {}) {
+  constructor(mnt, ops, opts = {}) {
     super()
 
     this.opts = opts
     this.mnt = path.resolve(mnt)
     this.ops = ops
-    this.timeout = opts.timeout === false ? 0 : (opts.timeout || DEFAULT_TIMEOUT)
+    this.timeout = opts.timeout === false ? 0 : opts.timeout || DEFAULT_TIMEOUT
 
     this._force = !!opts.force
     this._mkdir = !!opts.mkdir
@@ -158,7 +267,7 @@ class Fuse extends Nanoresource {
     this._sync = true
   }
 
-  _getImplementedArray () {
+  _getImplementedArray() {
     const implemented = new Uint32Array(35)
     for (const impl of this._implemented) {
       implemented[impl] = 1
@@ -166,10 +275,14 @@ class Fuse extends Nanoresource {
     return implemented
   }
 
-  _fuseOptions () {
+  _fuseOptions() {
     const options = []
 
-    if ((/\*|(^,)fuse-bindings(,$)/.test(process.env.DEBUG)) || this.opts.debug) options.push('debug')
+    if (
+      /\*|(^,)neofuse-bindings(,$)/.test(process.env.DEBUG) ||
+      this.opts.debug
+    )
+      options.push('debug')
     if (this.opts.allowOther) options.push('allow_other')
     if (this.opts.allowRoot) options.push('allow_root')
     if (this.opts.autoUnmount) options.push('auto_unmount')
@@ -186,14 +299,18 @@ class Fuse extends Nanoresource {
     if (this.opts.umask) options.push('umask=' + this.opts.umask)
     if (this.opts.uid) options.push('uid=' + this.opts.uid)
     if (this.opts.gid) options.push('gid=' + this.opts.gid)
-    if (this.opts.entryTimeout) options.push('entry_timeout=' + this.opts.entryTimeout)
-    if (this.opts.attrTimeout) options.push('attr_timeout=' + this.opts.attrTimeout)
-    if (this.opts.acAttrTimeout) options.push('ac_attr_timeout=' + this.opts.acAttrTimeout)
+    if (this.opts.entryTimeout)
+      options.push('entry_timeout=' + this.opts.entryTimeout)
+    if (this.opts.attrTimeout)
+      options.push('attr_timeout=' + this.opts.attrTimeout)
+    if (this.opts.acAttrTimeout)
+      options.push('ac_attr_timeout=' + this.opts.acAttrTimeout)
     if (this.opts.noforget) options.push('noforget')
     if (this.opts.remember) options.push('remember=' + this.opts.remember)
     if (this.opts.modules) options.push('modules=' + this.opts.modules)
 
-    if (this.opts.displayFolder && IS_OSX) { // only works on osx
+    if (this.opts.displayFolder && IS_OSX) {
+      // only works on osx
       options.push('volname=' + path.basename(this.opts.name || this.mnt))
       if (HAS_FOLDER_ICON) options.push('volicon=' + OSX_FOLDER_ICON)
     }
@@ -201,13 +318,13 @@ class Fuse extends Nanoresource {
     return options.length ? '-o' + options.join(',') : ''
   }
 
-  _malloc (size) {
+  _malloc(size) {
     const buf = Buffer.alloc(size)
     this._threads.add(buf)
     return buf
   }
 
-  _makeHandlerArray () {
+  _makeHandlerArray() {
     const self = this
     const handlers = new Array(OpcodesAndDefaults.size)
 
@@ -220,7 +337,7 @@ class Fuse extends Nanoresource {
 
     return handlers
 
-    function makeHandler (name, op, defaults, nativeSignal) {
+    function makeHandler(name, op, defaults, nativeSignal) {
       let to = self.timeout
       if (typeof to === 'object' && to) {
         const defaultTimeout = to.default || DEFAULT_TIMEOUT
@@ -233,11 +350,12 @@ class Fuse extends Nanoresource {
         const input = [...args]
         const boundSignal = to ? autoTimeout(sig, input) : sig
         const funcName = `_op_${name}`
-        if (!self[funcName] || !self._implemented.has(op)) return boundSignal(-1, ...defaults)
+        if (!self[funcName] || !self._implemented.has(op))
+          return boundSignal(-1, ...defaults)
         return self[funcName].apply(self, [boundSignal, ...args])
       }
 
-      function signal (nativeHandler, err, ...args) {
+      function signal(nativeHandler, err, ...args) {
         var arr = [nativeHandler, err, ...args]
 
         if (defaults) {
@@ -248,12 +366,12 @@ class Fuse extends Nanoresource {
         return process.nextTick(nativeSignal, ...arr)
       }
 
-      function autoTimeout (cb, input) {
+      function autoTimeout(cb, input) {
         let called = false
         const timeout = setTimeout(timeoutWrap, to, TIMEOUT_ERRNO)
         return timeoutWrap
 
-        function timeoutWrap (err, ...args) {
+        function timeoutWrap(err, ...args) {
           if (called) return
           called = true
 
@@ -281,9 +399,11 @@ class Fuse extends Nanoresource {
 
   // Static methods
 
-  static unmount (mnt, cb) {
+  static unmount(mnt, cb) {
     mnt = JSON.stringify(mnt)
-    const cmd = IS_OSX ? `diskutil unmount force ${mnt}` : `fusermount -uz ${mnt}`
+    const cmd = IS_OSX
+      ? `diskutil unmount force ${mnt}`
+      : `fusermount -uz ${mnt}`
     exec(cmd, err => {
       if (err) return cb(err)
       return cb(null)
@@ -294,18 +414,19 @@ class Fuse extends Nanoresource {
 
   // Lifecycle methods
 
-  _open (cb) {
+  _open(cb) {
     const self = this
 
     if (this._force) {
       return fs.stat(path.join(this.mnt, 'test'), (err, st) => {
-        if (err && (err.errno === ENOTCONN || err.errno === Fuse.ENXIO)) return Fuse.unmount(this.mnt, open)
+        if (err && (err.errno === ENOTCONN || err.errno === Fuse.ENXIO))
+          return Fuse.unmount(this.mnt, open)
         return open()
       })
     }
     return open()
 
-    function open () {
+    function open() {
       // If there was an unmount error, continue attempting to mount (this is the best we can do)
       self._thread = Buffer.alloc(binding.sizeof_fuse_thread_t)
       self._openCallback = cb
@@ -325,16 +446,26 @@ class Fuse extends Nanoresource {
             })
           })
         }
-        if (!stat.isDirectory()) return cb(new Error('Mountpoint is not a directory'))
+        if (!stat.isDirectory())
+          return cb(new Error('Mountpoint is not a directory'))
         return onexists(stat)
       })
 
-      function onexists (stat) {
+      function onexists(stat) {
         fs.stat(path.join(self.mnt, '..'), (_, parent) => {
-          if (parent && parent.dev !== stat.dev) return cb(new Error('Mountpoint in use'))
+          if (parent && parent.dev !== stat.dev)
+            return cb(new Error('Mountpoint in use'))
           try {
             // TODO: asyncify
-            binding.fuse_native_mount(self.mnt, opts, self._thread, self, self._malloc, self._handlers, implemented)
+            binding.fuse_native_mount(
+              self.mnt,
+              opts,
+              self._thread,
+              self,
+              self._malloc,
+              self._handlers,
+              implemented
+            )
           } catch (err) {
             return cb(err)
           }
@@ -343,7 +474,7 @@ class Fuse extends Nanoresource {
     }
   }
 
-  _close (cb) {
+  _close(cb) {
     const self = this
 
     Fuse.unmount(this.mnt, err => {
@@ -354,7 +485,7 @@ class Fuse extends Nanoresource {
       nativeUnmount()
     })
 
-    function nativeUnmount () {
+    function nativeUnmount() {
       try {
         binding.fuse_native_unmount(self.mnt, self._thread)
       } catch (err) {
@@ -366,7 +497,7 @@ class Fuse extends Nanoresource {
 
   // Handlers
 
-  _op_init (signal) {
+  _op_init(signal) {
     if (this._openCallback) {
       process.nextTick(this._openCallback, null)
       this._openCallback = null
@@ -380,7 +511,7 @@ class Fuse extends Nanoresource {
     })
   }
 
-  _op_error (signal) {
+  _op_error(signal) {
     if (!this.ops.error) {
       signal(0)
       return
@@ -390,7 +521,7 @@ class Fuse extends Nanoresource {
     })
   }
 
-  _op_statfs (signal, path) {
+  _op_statfs(signal, path) {
     this.ops.statfs(path, (err, statfs) => {
       if (err) return signal(err)
       const arr = getStatfsArray(statfs)
@@ -398,12 +529,21 @@ class Fuse extends Nanoresource {
     })
   }
 
-  _op_getattr (signal, path) {
+  _op_getattr(signal, path) {
     if (!this.ops.getattr) {
       if (path !== '/') {
         signal(Fuse.EPERM)
       } else {
-        signal(0, getStatArray({ mtime: new Date(0), atime: new Date(0), ctime: new Date(0), mode: 16877, size: 4096 }))
+        signal(
+          0,
+          getStatArray({
+            mtime: new Date(0),
+            atime: new Date(0),
+            ctime: new Date(0),
+            mode: 16877,
+            size: 4096,
+          })
+        )
       }
       return
     }
@@ -414,12 +554,21 @@ class Fuse extends Nanoresource {
     })
   }
 
-  _op_fgetattr (signal, path, fd) {
+  _op_fgetattr(signal, path, fd) {
     if (!this.ops.fgetattr) {
       if (path !== '/') {
         signal(Fuse.EPERM)
       } else {
-        signal(0, getStatArray({ mtime: new Date(0), atime: new Date(0), ctime: new Date(0), mode: 16877, size: 4096 }))
+        signal(
+          0,
+          getStatArray({
+            mtime: new Date(0),
+            atime: new Date(0),
+            ctime: new Date(0),
+            mode: 16877,
+            size: 4096,
+          })
+        )
       }
       return
     }
@@ -429,31 +578,31 @@ class Fuse extends Nanoresource {
     })
   }
 
-  _op_access (signal, path, mode) {
+  _op_access(signal, path, mode) {
     this.ops.access(path, mode, err => {
       return signal(err)
     })
   }
 
-  _op_open (signal, path, flags) {
+  _op_open(signal, path, flags) {
     this.ops.open(path, flags, (err, fd) => {
       return signal(err, fd)
     })
   }
 
-  _op_opendir (signal, path, flags) {
+  _op_opendir(signal, path, flags) {
     this.ops.opendir(path, flags, (err, fd) => {
       return signal(err, fd)
     })
   }
 
-  _op_create (signal, path, mode) {
+  _op_create(signal, path, mode) {
     this.ops.create(path, mode, (err, fd) => {
       return signal(err, fd)
     })
   }
 
-  _op_utimens (signal, path, atimeLow, atimeHigh, mtimeLow, mtimeHigh) {
+  _op_utimens(signal, path, atimeLow, atimeHigh, mtimeLow, mtimeHigh) {
     const atime = getDoubleArg(atimeLow, atimeHigh)
     const mtime = getDoubleArg(mtimeLow, mtimeHigh)
     this.ops.utimens(path, atime, mtime, err => {
@@ -461,31 +610,45 @@ class Fuse extends Nanoresource {
     })
   }
 
-  _op_release (signal, path, fd) {
+  _op_release(signal, path, fd) {
     this.ops.release(path, fd, err => {
       return signal(err)
     })
   }
 
-  _op_releasedir (signal, path, fd) {
+  _op_releasedir(signal, path, fd) {
     this.ops.releasedir(path, fd, err => {
       return signal(err)
     })
   }
 
-  _op_read (signal, path, fd, buf, len, offsetLow, offsetHigh) {
-    this.ops.read(path, fd, buf, len, getDoubleArg(offsetLow, offsetHigh), (err, bytesRead) => {
-      return signal(err, bytesRead || 0, buf.buffer)
-    })
+  _op_read(signal, path, fd, buf, len, offsetLow, offsetHigh) {
+    this.ops.read(
+      path,
+      fd,
+      buf,
+      len,
+      getDoubleArg(offsetLow, offsetHigh),
+      (err, bytesRead) => {
+        return signal(err, bytesRead || 0, buf.buffer)
+      }
+    )
   }
 
-  _op_write (signal, path, fd, buf, len, offsetLow, offsetHigh) {
-    this.ops.write(path, fd, buf, len, getDoubleArg(offsetLow, offsetHigh), (err, bytesWritten) => {
-      return signal(err, bytesWritten || 0, buf.buffer)
-    })
+  _op_write(signal, path, fd, buf, len, offsetLow, offsetHigh) {
+    this.ops.write(
+      path,
+      fd,
+      buf,
+      len,
+      getDoubleArg(offsetLow, offsetHigh),
+      (err, bytesWritten) => {
+        return signal(err, bytesWritten || 0, buf.buffer)
+      }
+    )
   }
 
-  _op_readdir (signal, path) {
+  _op_readdir(signal, path) {
     this.ops.readdir(path, (err, names, stats) => {
       if (err) return signal(err)
       if (stats) stats = stats.map(getStatArray)
@@ -493,13 +656,13 @@ class Fuse extends Nanoresource {
     })
   }
 
-  _op_setxattr (signal, path, name, value, position, flags) {
+  _op_setxattr(signal, path, name, value, position, flags) {
     this.ops.setxattr(path, name, value, position, flags, err => {
       return signal(err, value.buffer)
     })
   }
 
-  _op_getxattr (signal, path, name, valueBuf, position) {
+  _op_getxattr(signal, path, name, valueBuf, position) {
     this.ops.getxattr(path, name, position, (err, value) => {
       if (!err) {
         if (!value) return signal(IS_OSX ? -93 : -61, valueBuf.buffer)
@@ -510,7 +673,7 @@ class Fuse extends Nanoresource {
     })
   }
 
-  _op_listxattr (signal, path, listBuf) {
+  _op_listxattr(signal, path, listBuf) {
     this.ops.listxattr(path, (err, list) => {
       if (list && !err) {
         if (!listBuf.length) {
@@ -533,99 +696,99 @@ class Fuse extends Nanoresource {
     })
   }
 
-  _op_removexattr (signal, path, name) {
+  _op_removexattr(signal, path, name) {
     this.ops.removexattr(path, name, err => {
       return signal(err)
     })
   }
 
-  _op_flush (signal, path, fd) {
+  _op_flush(signal, path, fd) {
     this.ops.flush(path, fd, err => {
       return signal(err)
     })
   }
 
-  _op_fsync (signal, path, datasync, fd) {
+  _op_fsync(signal, path, datasync, fd) {
     this.ops.fsync(path, datasync, fd, err => {
       return signal(err)
     })
   }
 
-  _op_fsyncdir (signal, path, datasync, fd) {
+  _op_fsyncdir(signal, path, datasync, fd) {
     this.ops.fsyncdir(path, datasync, fd, err => {
       return signal(err)
     })
   }
 
-  _op_truncate (signal, path, sizeLow, sizeHigh) {
+  _op_truncate(signal, path, sizeLow, sizeHigh) {
     const size = getDoubleArg(sizeLow, sizeHigh)
     this.ops.truncate(path, size, err => {
       return signal(err)
     })
   }
 
-  _op_ftruncate (signal, path, fd, sizeLow, sizeHigh) {
+  _op_ftruncate(signal, path, fd, sizeLow, sizeHigh) {
     const size = getDoubleArg(sizeLow, sizeHigh)
     this.ops.ftruncate(path, fd, size, err => {
       return signal(err)
     })
   }
 
-  _op_readlink (signal, path) {
+  _op_readlink(signal, path) {
     this.ops.readlink(path, (err, linkname) => {
       return signal(err, linkname)
     })
   }
 
-  _op_chown (signal, path, uid, gid) {
+  _op_chown(signal, path, uid, gid) {
     this.ops.chown(path, uid, gid, err => {
       return signal(err)
     })
   }
 
-  _op_chmod (signal, path, mode) {
+  _op_chmod(signal, path, mode) {
     this.ops.chmod(path, mode, err => {
       return signal(err)
     })
   }
 
-  _op_mknod (signal, path, mode, dev) {
+  _op_mknod(signal, path, mode, dev) {
     this.ops.mknod(path, mode, dev, err => {
       return signal(err)
     })
   }
 
-  _op_unlink (signal, path) {
+  _op_unlink(signal, path) {
     this.ops.unlink(path, err => {
       return signal(err)
     })
   }
 
-  _op_rename (signal, src, dest) {
+  _op_rename(signal, src, dest) {
     this.ops.rename(src, dest, err => {
       return signal(err)
     })
   }
 
-  _op_link (signal, src, dest) {
+  _op_link(signal, src, dest) {
     this.ops.link(src, dest, err => {
       return signal(err)
     })
   }
 
-  _op_symlink (signal, src, dest) {
+  _op_symlink(signal, src, dest) {
     this.ops.symlink(src, dest, err => {
       return signal(err)
     })
   }
 
-  _op_mkdir (signal, path, mode) {
+  _op_mkdir(signal, path, mode) {
     this.ops.mkdir(path, mode, err => {
       return signal(err)
     })
   }
 
-  _op_rmdir (signal, path) {
+  _op_rmdir(signal, path) {
     this.ops.rmdir(path, err => {
       return signal(err)
     })
@@ -633,15 +796,15 @@ class Fuse extends Nanoresource {
 
   // Public API
 
-  mount (cb) {
+  mount(cb) {
     return this.open(cb)
   }
 
-  unmount (cb) {
+  unmount(cb) {
     return this.close(cb)
   }
 
-  errno (code) {
+  errno(code) {
     return (code && Fuse[code.toUpperCase()]) || -1
   }
 }
@@ -780,7 +943,7 @@ Fuse.isConfigured = isConfigured
 
 module.exports = Fuse
 
-function getStatfsArray (statfs) {
+function getStatfsArray(statfs) {
   const ints = new Uint32Array(11)
 
   ints[0] = (statfs && statfs.bsize) || 0
@@ -798,22 +961,22 @@ function getStatfsArray (statfs) {
   return ints
 }
 
-function setDoubleInt (arr, idx, num) {
+function setDoubleInt(arr, idx, num) {
   arr[idx] = num % 4294967296
   arr[idx + 1] = (num - arr[idx]) / 4294967296
 }
 
-function getDoubleArg (a, b) {
+function getDoubleArg(a, b) {
   return a + b * 4294967296
 }
 
-function toDateMS (st) {
+function toDateMS(st) {
   if (typeof st === 'number') return st
   if (!st) return Date.now()
   return st.getTime()
 }
 
-function getStatArray (stat) {
+function getStatArray(stat) {
   const ints = new Uint32Array(18)
 
   ints[0] = (stat && stat.mode) || 0

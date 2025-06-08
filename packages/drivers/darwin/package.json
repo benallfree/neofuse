@@ -3,9 +3,11 @@
   "version": "0.0.1",
   "description": "A module containing the dylib needed to run FUSE on Mac (darwin).",
   "main": "index.js",
-  "directories": {
-    "example": "example"
-  },
+  "files": [
+    "macfuse",
+    "example",
+    "*.js"
+  ],
   "scripts": {
     "test": "standard"
   },

@@ -1,21 +1,24 @@
 {
-  "name": "fuse-shared-library",
+  "name": "neofuse-shared-library-darwin-example",
   "version": "0.0.0",
   "description": "WIP - nothing to see here",
   "main": "index.js",
   "dependencies": {
-    "fuse-shared-library-darwin": "^1.0.0",
+    "neofuse-shared-library-darwin": "workspace:*",
     "napi-macros": "^1.8.2"
   },
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/mafintosh/fuse-shared-library.git"
+    "url": "https://github.com/benallfree/neofuse.git"
   },
-  "author": "Mathias Buus (@mafintosh)",
+  "author": {
+    "name": "Ben Allfree",
+    "url": "https://x.com/benallfree"
+  },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mafintosh/fuse-shared-library/issues"
+    "url": "https://github.com/benallfree/neofuse/issues"
   },
-  "homepage": "https://github.com/mafintosh/fuse-shared-library"
+  "homepage": "https://github.com/benallfree/neofuse"
 }

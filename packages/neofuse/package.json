@@ -15,7 +15,7 @@
   },
   "gypfile": true,
   "dependencies": {
-    "neofuse-shared-library": "^0.0.1",
+    "neofuse-shared-library": "workspace:*",
     "nanoresource": "^1.3.0",
     "napi-macros": "^2.0.0",
     "node-gyp-build": "^4.2.0"
