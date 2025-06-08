@@ -23,9 +23,9 @@
   },
   "homepage": "https://github.com/benallfree/neofuse#readme",
   "dependencies": {
-    "fuse-shared-library-darwin": "^1.0.3",
-    "fuse-shared-library-linux": "^1.0.1",
-    "fuse-shared-library-linux-arm": "^1.0.0"
+    "neofuse-shared-library-darwin": "^0.0.1",
+    "neofuse-shared-library-linux": "^0.0.1",
+    "neofuse-shared-library-linux-arm": "^0.0.1"
   },
   "devDependencies": {
     "standard": "^12.0.1"
