@@ -3,18 +3,18 @@
   "workspaces": {
     "": {
       "dependencies": {
-        "nanoresource": "latest",
-        "napi-macros": "latest",
-        "node-gyp-build": "latest",
+        "nanoresource": "^1.3.0",
+        "napi-macros": "^2.2.2",
+        "node-gyp-build": "^4.8.4",
       },
       "devDependencies": {
-        "@changesets/cli": "latest",
-        "concat-stream": "latest",
-        "prebuildify": "latest",
-        "prettier": "latest",
-        "prettier-plugin-organize-imports": "latest",
-        "standard": "latest",
-        "tape": "latest",
+        "@changesets/cli": "^2.29.4",
+        "concat-stream": "^2.0.0",
+        "prebuildify": "^6.0.1",
+        "prettier": "^3.5.3",
+        "prettier-plugin-organize-imports": "^4.1.0",
+        "standard": "^17.1.2",
+        "tape": "^5.9.0",
       },
     },
   },

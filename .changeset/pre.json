@@ -1,0 +1,10 @@
+{
+  "mode": "pre",
+  "tag": "rc",
+  "initialVersions": {
+    "neofuse": "0.0.1"
+  },
+  "changesets": [
+    "modern-rocks-double"
+  ]
+}

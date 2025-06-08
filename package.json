@@ -1,6 +1,6 @@
 {
   "name": "neofuse",
-  "version": "0.0.1",
+  "version": "0.0.1-rc.0",
   "description": "FUSE bindings for Node",
   "main": "index.js",
   "scripts": {
