@@ -4,13 +4,6 @@ const path = require('path')
 const { exec } = require('child_process')
 
 const Nanoresource = require('nanoresource')
-const {
-  beforeMount,
-  beforeUnmount,
-  configure,
-  unconfigure,
-  isConfigured,
-} = require('neofuse-shared-library')
 
 const binding = require('node-gyp-build')(__dirname)
 
@@ -933,13 +926,6 @@ Fuse.EREMOTEIO = -121
 Fuse.EDQUOT = -122
 Fuse.ENOMEDIUM = -123
 Fuse.EMEDIUMTYPE = -124
-
-// Forward configuration functions through the exported class.
-Fuse.beforeMount = beforeMount
-Fuse.beforeUnmount = beforeUnmount
-Fuse.configure = configure
-Fuse.unconfigure = unconfigure
-Fuse.isConfigured = isConfigured
 
 module.exports = Fuse
 
