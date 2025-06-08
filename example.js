@@ -1,20 +1,26 @@
-const Fuse = require('./')
+import Fuse from './'
 
 const ops = {
   readdir: function (path, cb) {
     console.log('readdir(%s)', path)
-    if (path === '/') return process.nextTick(cb, 0, ['test'], [
-      {
-        mtime: new Date(),
-        atime: new Date(),
-        ctime: new Date(),
-        nlink: 1,
-        size: 12,
-        mode: 33188,
-        uid: process.getuid ? process.getuid() : 0,
-        gid: process.getgid ? process.getgid() : 0
-      }
-    ])
+    if (path === '/')
+      return process.nextTick(
+        cb,
+        0,
+        ['test'],
+        [
+          {
+            mtime: new Date(),
+            atime: new Date(),
+            ctime: new Date(),
+            nlink: 1,
+            size: 12,
+            mode: 33188,
+            uid: process.getuid ? process.getuid() : 0,
+            gid: process.getgid ? process.getgid() : 0,
+          },
+        ]
+      )
     return process.nextTick(cb, 0)
   },
   /*
@@ -33,7 +39,7 @@ const ops = {
         size: 100,
         mode: 16877,
         uid: process.getuid ? process.getuid() : 0,
-        gid: process.getgid ? process.getgid() : 0
+        gid: process.getgid ? process.getgid() : 0,
       })
     }
 
@@ -46,7 +52,7 @@ const ops = {
         size: 12,
         mode: 33188,
         uid: process.getuid ? process.getuid() : 0,
-        gid: process.getgid ? process.getgid() : 0
+        gid: process.getgid ? process.getgid() : 0,
       })
     }
 
@@ -62,7 +68,7 @@ const ops = {
     if (!str) return process.nextTick(cb, 0)
     buf.write(str)
     return process.nextTick(cb, str.length)
-  }
+  },
 }
 
 const fuse = new Fuse('./mnt', ops, { debug: true, displayFolder: true })
