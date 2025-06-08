@@ -1,5 +1,4 @@
-# fuse-native
-[![Build Status](https://travis-ci.org/fuse-friends/fuse-native.svg?branch=master)](https://travis-ci.org/fuse-friends/fuse-native)
+# neofuse
 
 Multithreaded FUSE bindings for Node JS.
 
@@ -13,7 +12,7 @@ Multithreaded FUSE bindings for Node JS.
 
 ## Installation
 ```
-npm i fuse-native --save
+npm i neofuse --save
 ```
 
 ## Example
@@ -327,14 +326,13 @@ There is a CLI tool available to help you configure the FUSE kernel extension se
 if you don't want to use the JavaScript API for that
 
 ```
-npm install -g fuse-native
-fuse-native is-configured # checks if the kernel extension is already configured
-fuse-native configure # configures the kernel extension
+npm install -g neofuse
+neofuse is-configured # checks if the kernel extension is already configured
+neofuse configure # configures the kernel extension
 ```
 
 ## License
 
 MIT for these bindings.
 
-See the [OSXFUSE](https://github.com/osxfuse/osxfuse) license for MacOS and the [libfuse](https://github.com/libfuse/libfuse) license for Linux/BSD
-for the FUSE shared library licence.
+See the [MacFUSE](https://macfuse.github.io/) license for MacOS and the [libfuse](https://github.com/libfuse/libfuse) license for Linux/BSD for the FUSE shared library licence.

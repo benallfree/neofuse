@@ -1,6 +1,6 @@
 {
-  "name": "fuse-shared-library-darwin",
-  "version": "1.1.3",
+  "name": "neofuse-shared-library-darwin",
+  "version": "0.0.1",
   "description": "A module containing the dylib needed to run FUSE on Mac (darwin).",
   "main": "index.js",
   "directories": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mafintosh/fuse-shared-library-darwin.git"
+    "url": "git+https://github.com/benallfree/neofuse.git"
   },
   "keywords": [
     "fuse",
@@ -21,12 +21,15 @@
     "macfuse",
     "mac"
   ],
-  "author": "Mathias Buus (@mafintosh)",
+  "author": {
+    "name": "Ben Allfree",
+    "url": "https://x.com/benallfree"
+  },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mafintosh/fuse-shared-library-darwin/issues"
+    "url": "https://github.com/benallfree/neofuse/issues"
   },
-  "homepage": "https://github.com/mafintosh/fuse-shared-library-darwin#readme",
+  "homepage": "https://github.com/benallfree/neofuse#readme",
   "devDependencies": {
     "standard": "^12.0.1"
   }

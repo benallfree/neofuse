@@ -1,10 +1,10 @@
 {
-  "name": "fuse-native",
-  "version": "2.2.6",
+  "name": "neofuse",
+  "version": "0.0.1",
   "description": "Fully maintained fuse bindings for Node that aims to cover the entire FUSE api",
   "main": "index.js",
   "bin": {
-    "fuse-native": "./bin.js"
+    "neofuse": "./bin.js"
   },
   "scripts": {
     "install": "node-gyp-build",
@@ -28,12 +28,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fuse-friends/fuse-native.git"
+    "url": "https://github.com/benallfree/neofuse.git"
   },
-  "author": "Mathias Buus (@mafintosh)",
+  "author": {
+    "name": "Ben Allfree",
+    "url": "https://x.com/benallfree"
+  },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/fuse-friends/fuse-native/issues"
+    "url": "https://github.com/benallfree/neofuse/issues"
   },
-  "homepage": "https://github.com/fuse-friends/fuse-native"
+  "homepage": "https://github.com/benallfree/neofuse"
 }

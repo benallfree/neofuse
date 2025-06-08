@@ -1,6 +1,6 @@
 {
-  "name": "fuse-shared-library",
-  "version": "1.1.1",
+  "name": "neofuse-shared-library",
+  "version": "0.0.1",
   "description": "Cross-platform FUSE libraries for OSX/Linux",
   "main": "index.js",
   "scripts": {
@@ -8,17 +8,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fuse-friends/fuse-shared-library.git"
+    "url": "git+https://github.com/benallfree/neofuse.git"
   },
   "keywords": [
     "fuse"
   ],
-  "author": "Andrew Osheroff <andrewosh@gmail.com>",
+  "author": {
+    "name": "Ben Allfree",
+    "url": "https://x.com/benallfree"
+  },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/fuse-friends/fuse-shared-library/issues"
+    "url": "https://github.com/benallfree/neofuse/issues"
   },
-  "homepage": "https://github.com/fuse-friends/fuse-shared-library#readme",
+  "homepage": "https://github.com/benallfree/neofuse#readme",
   "dependencies": {
     "fuse-shared-library-darwin": "^1.0.3",
     "fuse-shared-library-linux": "^1.0.1",

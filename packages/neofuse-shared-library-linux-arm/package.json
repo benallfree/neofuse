@@ -1,6 +1,6 @@
 {
-  "name": "fuse-shared-library-linux-arm",
-  "version": "1.0.0",
+  "name": "neofuse-shared-library-linux-arm",
+  "version": "0.0.1",
   "description": "A module containing the .so file and configuration scripts necessary for FUSE on ARM based Linux.",
   "main": "index.js",
   "directories": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fuse-friends/fuse-shared-library-linux-arm.git"
+    "url": "git+https://github.com/benallfree/neofuse.git"
   },
   "keywords": [
     "fuse",
@@ -20,12 +20,15 @@
     "prebuild",
     "linux"
   ],
-  "author": "Andrew Osheroff <andrewosh@gmail.com>",
+  "author": {
+    "name": "Ben Allfree",
+    "url": "https://x.com/benallfree"
+  },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/fuse-friends/fuse-shared-library-linux-arm/issues"
+    "url": "https://github.com/benallfree/neofuse/issues"
   },
-  "homepage": "https://github.com/fuse-friends/fuse-shared-library-linux-arm#readme",
+  "homepage": "https://github.com/benallfree/neofuse#readme",
   "devDependencies": {
     "standard": "^12.0.1"
   }

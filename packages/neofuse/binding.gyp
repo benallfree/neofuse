@@ -9,7 +9,7 @@
       "<!(node -e \"require('fuse-shared-library/lib')\")",
     ],
     "sources": [
-      "fuse-native.c"
+      "neofuse.c"
     ],
     'xcode_settings': {
       'OTHER_CFLAGS': [
