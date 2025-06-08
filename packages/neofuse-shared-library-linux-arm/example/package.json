@@ -1,0 +1,21 @@
+{
+  "name": "fuse-shared-library",
+  "version": "0.0.0",
+  "description": "WIP - nothing to see here",
+  "main": "index.js",
+  "dependencies": {
+    "napi-macros": "^1.8.2",
+    "fuse-shared-library-linux": "file:///.."
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mafintosh/fuse-shared-library.git"
+  },
+  "author": "Mathias Buus (@mafintosh)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mafintosh/fuse-shared-library/issues"
+  },
+  "homepage": "https://github.com/mafintosh/fuse-shared-library"
+}

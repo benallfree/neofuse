@@ -1,0 +1,32 @@
+{
+  "name": "fuse-shared-library-linux",
+  "version": "1.0.0",
+  "description": "A module containing the .so file and configuration scripts necessary for FUSE on Linux.",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fuse-friends/fuse-shared-library-linux.git"
+  },
+  "keywords": [
+    "fuse",
+    "shared",
+    "library",
+    "prebuild",
+    "linux"
+  ],
+  "author": "Andrew Osheroff <andrewosh@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fuse-friends/fuse-shared-library-linux/issues"
+  },
+  "homepage": "https://github.com/fuse-friends/fuse-shared-library-linux#readme",
+  "devDependencies": {
+    "standard": "^12.0.1"
+  }
+}
