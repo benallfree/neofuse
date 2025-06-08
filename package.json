@@ -2,7 +2,12 @@
   "name": "neofuse",
   "version": "0.0.1-rc.0",
   "description": "FUSE bindings for Node",
-  "main": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts"
+    }
+  },
   "scripts": {
     "test": "tape test/*.js",
     "build": "prebuildify --napi --strip"

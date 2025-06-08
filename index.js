@@ -1,11 +1,13 @@
-const os = require('os')
-const fs = require('fs')
-const path = require('path')
-const { exec } = require('child_process')
+import { exec } from 'child_process'
+import fs from 'fs'
+import Nanoresource from 'nanoresource'
+import nodeGypBuild from 'node-gyp-build'
+import os from 'os'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-const Nanoresource = require('nanoresource')
-
-const binding = require('node-gyp-build')(__dirname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const binding = nodeGypBuild(__dirname)
 
 const IS_OSX = os.platform() === 'darwin'
 const OSX_FOLDER_ICON =
@@ -927,7 +929,7 @@ Fuse.EDQUOT = -122
 Fuse.ENOMEDIUM = -123
 Fuse.EMEDIUMTYPE = -124
 
-module.exports = Fuse
+export default Fuse
 
 function getStatfsArray(statfs) {
   const ints = new Uint32Array(11)
