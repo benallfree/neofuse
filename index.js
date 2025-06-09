@@ -930,6 +930,7 @@ Fuse.ENOMEDIUM = -123
 Fuse.EMEDIUMTYPE = -124
 
 export default Fuse
+export { createInMemoryFilesystem } from './lib/inmemory.js'
 
 function getStatfsArray(statfs) {
   const ints = new Uint32Array(11)

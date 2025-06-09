@@ -103,6 +103,43 @@ fuse.mount(function (err) {
 })
 ```
 
+## In-Memory Filesystem Provider
+
+For testing and development purposes, neofuse includes a built-in in-memory filesystem provider that implements a fully functional filesystem in RAM.
+
+### `createInMemoryFilesystem()`
+
+Creates a complete FUSE operations object that implements a fully functional in-memory filesystem with support for:
+
+- File operations: create, read, write, delete, truncate
+- Directory operations: create, list, delete
+- Metadata operations: permissions, timestamps, ownership
+- All other standard filesystem operations
+
+```js
+import Fuse, { createInMemoryFilesystem } from 'neofuse'
+
+const ops = createInMemoryFilesystem()
+const fuse = new Fuse('./mnt', ops, { debug: true })
+
+fuse.mount(err => {
+  if (err) throw err
+  console.log('In-memory filesystem mounted!')
+  
+  // Now you can use standard filesystem operations:
+  // fs.writeFile('./mnt/test.txt', 'Hello World!')
+  // fs.mkdir('./mnt/mydir') 
+  // etc.
+})
+```
+
+This provider is perfect for:
+- **Testing**: Create isolated filesystem environments for your tests
+- **Development**: Prototype filesystem applications without persistence
+- **Demos**: Showcase FUSE functionality without complex setup
+
+The in-memory filesystem starts empty (except for the root directory) and all data is lost when the filesystem is unmounted.
+
 ## API
 In order to create a FUSE mountpoint, you first need to create a `Fuse` object that wraps a set of implemented FUSE syscall handlers:
 

@@ -313,4 +313,6 @@ declare class Fuse extends EventEmitter {
   static readonly EMEDIUMTYPE: number
 }
 
+export function createInMemoryFilesystem(): FuseOperations
+
 export default Fuse
