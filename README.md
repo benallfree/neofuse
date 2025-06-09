@@ -43,9 +43,9 @@ npm install neofuse --save
 
 ## Example
 ```js
-const Fuse = require('neofuse')
-const fs = require('fs')
-const path = require('path')
+import Fuse from 'neofuse'
+import fs from 'fs'
+import path from 'path'
 
 function stat(options) {
   return {
