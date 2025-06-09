@@ -31,6 +31,18 @@ tape('read and write big file', function (t) {
         )
       return process.nextTick(cb, Fuse.ENOENT)
     },
+    fgetattr(path, fd, cb) {
+      // Same as getattr but with fd parameter
+      if (path === '/')
+        return process.nextTick(cb, null, stat({ mode: 'dir', size: 4096 }))
+      if (path === '/test')
+        return process.nextTick(
+          cb,
+          null,
+          stat({ mode: 'file', size, mtime: new Date() })
+        )
+      return process.nextTick(cb, Fuse.ENOENT)
+    },
     open(path, flags, cb) {
       return process.nextTick(cb, 0, 42)
     },
