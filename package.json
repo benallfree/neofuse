@@ -16,21 +16,27 @@
   ],
   "scripts": {
     "test": "tape test/*.js",
-    "build": "prebuildify --napi --strip"
+    "build:darwin-x64": "prebuildify --napi --strip --platform darwin --arch x64",
+    "build:darwin-arm64": "prebuildify --napi --strip --platform darwin --arch arm64",
+    "build:linux-x64": "prebuildify --napi --strip --platform linux --arch x64",
+    "build:linux-arm64": "prebuildify --napi --strip --platform linux --arch arm64",
+    "build": "bun run clean && npm-run-all --sequential build:*",
+    "clean": "rm -rf prebuilds"
   },
   "dependencies": {
     "nanoresource": "^1.3.0",
     "node-gyp-build": "^4.8.4"
   },
   "devDependencies": {
-    "napi-macros": "^2.2.2",
-    "concat-stream": "^2.0.0",
-    "prebuildify": "^6.0.1",
-    "standard": "^17.1.2",
-    "tape": "^5.9.0",
     "@changesets/cli": "^2.29.4",
+    "concat-stream": "^2.0.0",
+    "napi-macros": "^2.2.2",
+    "npm-run-all": "^4.1.5",
+    "prebuildify": "^6.0.1",
     "prettier": "^3.5.3",
-    "prettier-plugin-organize-imports": "^4.1.0"
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "standard": "^17.1.2",
+    "tape": "^5.9.0"
   },
   "repository": {
     "type": "git",
