@@ -2,6 +2,7 @@
   "name": "neofuse",
   "version": "0.0.1-rc.2",
   "description": "FUSE bindings for Node",
+  "type": "module",
   "exports": {
     ".": {
       "import": "./index.js",
