@@ -5,12 +5,11 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./index.js",
-      "types": "./index.d.ts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "files": [
-    "prebuilds",
     "dist"
   ],
   "scripts": {
@@ -21,7 +20,7 @@
     "build:linux-arm64": "prebuildify --napi --strip --platform linux --arch arm64",
     "build:ts": "tsdown",
     "build": "bun run clean && npm-run-all --sequential build:*",
-    "clean": "rm -rf prebuilds"
+    "clean": "rm -rf prebuilds build dist"
   },
   "dependencies": {
     "nanoresource": "^1.3.0",
