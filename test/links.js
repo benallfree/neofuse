@@ -19,6 +19,11 @@ tape('readlink', function (t) {
     readlink: function (path, cb) {
       process.nextTick(cb, 0, 'hello')
     },
+    access: function (path, mode, cb) {
+      if (path === '/' || path === '/hello' || path === '/link')
+        return process.nextTick(cb, 0)
+      return process.nextTick(cb, Fuse.ENOENT)
+    },
     getattr: function (path, cb) {
       if (path === '/')
         return process.nextTick(cb, null, stat({ mode: 'dir', size: 4096 }))
