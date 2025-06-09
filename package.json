@@ -11,15 +11,15 @@
   },
   "files": [
     "prebuilds",
-    "index.js",
-    "index.d.ts"
+    "dist"
   ],
   "scripts": {
-    "test": "tape test/*.js",
+    "test": "bun run build && tape test/*.js",
     "build:darwin-x64": "prebuildify --napi --strip --platform darwin --arch x64",
     "build:darwin-arm64": "prebuildify --napi --strip --platform darwin --arch arm64",
     "build:linux-x64": "prebuildify --napi --strip --platform linux --arch x64",
     "build:linux-arm64": "prebuildify --napi --strip --platform linux --arch arm64",
+    "build:ts": "tsdown",
     "build": "bun run clean && npm-run-all --sequential build:*",
     "clean": "rm -rf prebuilds"
   },
@@ -36,7 +36,8 @@
     "prettier": "^3.5.3",
     "prettier-plugin-organize-imports": "^4.1.0",
     "standard": "^17.1.2",
-    "tape": "^5.9.0"
+    "tape": "^5.9.0",
+    "tsdown": "^0.12.7"
   },
   "repository": {
     "type": "git",

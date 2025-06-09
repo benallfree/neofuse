@@ -2,7 +2,7 @@ import { exec } from 'child_process'
 import tape from 'tape'
 import { unmount } from './helpers/index.js'
 
-import Fuse from '../index.js'
+import Fuse from '../dist/index.js'
 import createMountpoint from './fixtures/mnt.js'
 
 const mnt = createMountpoint()

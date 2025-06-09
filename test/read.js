@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import tape from 'tape'
 
-import Fuse from '../index.js'
+import Fuse from '../dist/index.js'
 import createMountpoint from './fixtures/mnt.js'
 import simpleFS from './fixtures/simple-fs.js'
 import stat from './fixtures/stat.js'

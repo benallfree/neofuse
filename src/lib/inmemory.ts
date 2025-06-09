@@ -1,8 +1,41 @@
-import Fuse from '../index.js'
+import type { FuseOperations, StatObject } from '../index'
+import { FuseErrno } from '../index'
 
-export function createInMemoryFilesystem() {
+interface FileNode {
+  type: 'file'
+  mode: number
+  content: Buffer
+  mtime: Date
+  atime: Date
+  ctime: Date
+  nlink: number
+  size: number
+  uid: number
+  gid: number
+}
+
+interface DirectoryNode {
+  type: 'directory'
+  mode: number
+  children: Map<string, FileNode | DirectoryNode>
+  mtime: Date
+  atime: Date
+  ctime: Date
+  nlink: number
+  size: number
+  uid: number
+  gid: number
+}
+
+type FsNode = FileNode | DirectoryNode
+
+interface Filesystem {
+  '/': DirectoryNode
+}
+
+export function createInMemoryFilesystem(): FuseOperations {
   // In-memory filesystem state
-  const filesystem = {
+  const filesystem: Filesystem = {
     '/': {
       type: 'directory',
       mode: 16877,
@@ -18,33 +51,38 @@ export function createInMemoryFilesystem() {
   }
 
   // Helper functions
-  function getNode(path) {
+  function getNode(path: string): FsNode | null {
     if (path === '/') return filesystem['/']
     const parts = path.split('/').filter(Boolean)
-    let current = filesystem['/']
+    let current: FsNode = filesystem['/']
     for (const part of parts) {
-      if (!current.children.has(part)) return null
-      current = current.children.get(part)
+      if (current.type !== 'directory' || !current.children.has(part))
+        return null
+      current = current.children.get(part)!
     }
     return current
   }
 
-  function getParentNode(path) {
+  function getParentNode(path: string): DirectoryNode | null {
     if (path === '/') return null
     const parts = path.split('/').filter(Boolean)
     const parentPath = '/' + parts.slice(0, -1).join('/')
-    return getNode(parentPath || '/')
+    const parent = getNode(parentPath || '/')
+    return parent && parent.type === 'directory' ? parent : null
   }
 
   return {
-    readdir: function (path, cb) {
+    readdir: function (
+      path: string,
+      cb: (err?: number, names?: string[], stats?: StatObject[]) => void
+    ) {
       const node = getNode(path)
       if (!node || node.type !== 'directory') {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
       const entries = Array.from(node.children.keys())
       const stats = entries.map(name => {
-        const child = node.children.get(name)
+        const child = node.children.get(name)!
         return {
           mtime: child.mtime,
           atime: child.atime,
@@ -59,10 +97,13 @@ export function createInMemoryFilesystem() {
       return process.nextTick(cb, 0, entries, stats)
     },
 
-    getattr: function (path, cb) {
+    getattr: function (
+      path: string,
+      cb: (err?: number, stat?: StatObject) => void
+    ) {
       const node = getNode(path)
       if (!node) {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
       return process.nextTick(cb, 0, {
         mtime: node.mtime,
@@ -76,14 +117,14 @@ export function createInMemoryFilesystem() {
       })
     },
 
-    mkdir: function (path, mode, cb) {
+    mkdir: function (path: string, mode: number, cb: (err?: number) => void) {
       const parent = getParentNode(path)
       if (!parent || parent.type !== 'directory') {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
-      const name = path.split('/').pop()
+      const name = path.split('/').pop()!
       if (parent.children.has(name)) {
-        return process.nextTick(cb, Fuse.EEXIST)
+        return process.nextTick(cb, FuseErrno.EEXIST)
       }
       parent.children.set(name, {
         type: 'directory',
@@ -100,16 +141,20 @@ export function createInMemoryFilesystem() {
       return process.nextTick(cb, 0)
     },
 
-    create: function (path, mode, cb) {
+    create: function (
+      path: string,
+      mode: number,
+      cb: (err?: number, fd?: number) => void
+    ) {
       const parent = getParentNode(path)
       if (!parent || parent.type !== 'directory') {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
-      const name = path.split('/').pop()
+      const name = path.split('/').pop()!
       if (parent.children.has(name)) {
-        return process.nextTick(cb, Fuse.EEXIST)
+        return process.nextTick(cb, FuseErrno.EEXIST)
       }
-      const node = {
+      const node: FileNode = {
         type: 'file',
         mode: mode || 33188,
         content: Buffer.alloc(0),
@@ -125,28 +170,46 @@ export function createInMemoryFilesystem() {
       return process.nextTick(cb, 0, 42) // 42 is an fd
     },
 
-    open: function (path, flags, cb) {
+    open: function (
+      path: string,
+      flags: number,
+      cb: (err?: number, fd?: number) => void
+    ) {
       const node = getNode(path)
       if (!node || node.type !== 'file') {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
       return process.nextTick(cb, 0, 42) // 42 is an fd
     },
 
-    read: function (path, fd, buf, len, pos, cb) {
+    read: function (
+      path: string,
+      fd: number,
+      buf: Buffer,
+      len: number,
+      pos: number,
+      cb: (err?: number, bytesRead?: number) => void
+    ) {
       const node = getNode(path)
       if (!node || node.type !== 'file') {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
       const data = node.content.slice(pos, pos + len)
       data.copy(buf)
       return process.nextTick(cb, data.length)
     },
 
-    write: function (path, fd, buf, len, pos, cb) {
+    write: function (
+      path: string,
+      fd: number,
+      buf: Buffer,
+      len: number,
+      pos: number,
+      cb: (err?: number, bytesWritten?: number) => void
+    ) {
       const node = getNode(path)
       if (!node || node.type !== 'file') {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
       const newContent = Buffer.alloc(Math.max(pos + len, node.content.length))
       node.content.copy(newContent)
@@ -157,37 +220,41 @@ export function createInMemoryFilesystem() {
       return process.nextTick(cb, len)
     },
 
-    unlink: function (path, cb) {
+    unlink: function (path: string, cb: (err?: number) => void) {
       const parent = getParentNode(path)
       if (!parent || parent.type !== 'directory') {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
-      const name = path.split('/').pop()
+      const name = path.split('/').pop()!
       if (!parent.children.has(name)) {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
       parent.children.delete(name)
       return process.nextTick(cb, 0)
     },
 
-    rmdir: function (path, cb) {
+    rmdir: function (path: string, cb: (err?: number) => void) {
       const parent = getParentNode(path)
       if (!parent || parent.type !== 'directory') {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
-      const name = path.split('/').pop()
+      const name = path.split('/').pop()!
       const node = parent.children.get(name)
       if (!node || node.type !== 'directory') {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
       if (node.children.size > 0) {
-        return process.nextTick(cb, Fuse.ENOTEMPTY)
+        return process.nextTick(cb, FuseErrno.ENOTEMPTY)
       }
       parent.children.delete(name)
       return process.nextTick(cb, 0)
     },
 
-    rename: function (oldPath, newPath, cb) {
+    rename: function (
+      oldPath: string,
+      newPath: string,
+      cb: (err?: number) => void
+    ) {
       const oldParent = getParentNode(oldPath)
       const newParent = getParentNode(newPath)
       if (
@@ -196,32 +263,36 @@ export function createInMemoryFilesystem() {
         oldParent.type !== 'directory' ||
         newParent.type !== 'directory'
       ) {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
-      const oldName = oldPath.split('/').pop()
-      const newName = newPath.split('/').pop()
+      const oldName = oldPath.split('/').pop()!
+      const newName = newPath.split('/').pop()!
       if (!oldParent.children.has(oldName)) {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
-      const node = oldParent.children.get(oldName)
+      const node = oldParent.children.get(oldName)!
       oldParent.children.delete(oldName)
       newParent.children.set(newName, node)
       return process.nextTick(cb, 0)
     },
 
-    chmod: function (path, mode, cb) {
+    chmod: function (path: string, mode: number, cb: (err?: number) => void) {
       const node = getNode(path)
       if (!node) {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
       node.mode = mode
       return process.nextTick(cb, 0)
     },
 
-    truncate: function (path, size, cb) {
+    truncate: function (
+      path: string,
+      size: number,
+      cb: (err?: number) => void
+    ) {
       const node = getNode(path)
       if (!node || node.type !== 'file') {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
       if (size < node.content.length) {
         node.content = node.content.slice(0, size)
@@ -235,32 +306,47 @@ export function createInMemoryFilesystem() {
       return process.nextTick(cb, 0)
     },
 
-    flush: function (path, fd, cb) {
+    flush: function (path: string, fd: number, cb: (err?: number) => void) {
       return process.nextTick(cb, 0)
     },
 
-    release: function (path, fd, cb) {
+    release: function (path: string, fd: number, cb: (err?: number) => void) {
       return process.nextTick(cb, 0)
     },
 
-    fsync: function (path, fd, datasync, cb) {
+    fsync: function (
+      path: string,
+      datasync: boolean,
+      fd: number,
+      cb: (err?: number) => void
+    ) {
       return process.nextTick(cb, 0)
     },
 
-    utimens: function (path, atime, mtime, cb) {
+    utimens: function (
+      path: string,
+      atime: number,
+      mtime: number,
+      cb: (err?: number) => void
+    ) {
       const node = getNode(path)
       if (!node) {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
       node.atime = new Date(atime)
       node.mtime = new Date(mtime)
       return process.nextTick(cb, 0)
     },
 
-    chown: function (path, uid, gid, cb) {
+    chown: function (
+      path: string,
+      uid: number,
+      gid: number,
+      cb: (err?: number) => void
+    ) {
       const node = getNode(path)
       if (!node) {
-        return process.nextTick(cb, Fuse.ENOENT)
+        return process.nextTick(cb, FuseErrno.ENOENT)
       }
       node.uid = uid
       node.gid = gid

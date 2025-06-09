@@ -1,4 +1,4 @@
-import Fuse from '../../index.js'
+import Fuse from '../../dist/index.js'
 import stat from './stat.js'
 
 export default function (tests = {}) {

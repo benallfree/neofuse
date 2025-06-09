@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url'
 
 import createMountpoint from './fixtures/mnt.js'
 
-import Fuse from '../index.js'
+import Fuse from '../dist/index.js'
 import simpleFS from './fixtures/simple-fs.js'
 import { unmount } from './helpers/index.js'
 
