@@ -1,6 +1,6 @@
-var os = require('os')
-var path = require('path')
-var fs = require('fs')
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
 
 function create(opts = {}) {
   var mnt = path.join(
@@ -19,4 +19,4 @@ function create(opts = {}) {
   return mnt
 }
 
-module.exports = create
+export default create

@@ -1,11 +1,11 @@
-const tape = require('tape')
-const fs = require('fs')
-const path = require('path')
-const { unmount } = require('./helpers')
+import fs from 'fs'
+import path from 'path'
+import tape from 'tape'
+import { unmount } from './helpers/index.js'
 
-const Fuse = require('../')
-const createMountpoint = require('./fixtures/mnt')
-const stat = require('./fixtures/stat')
+import Fuse from '../index.js'
+import createMountpoint from './fixtures/mnt.js'
+import stat from './fixtures/stat.js'
 
 const mnt = createMountpoint()
 
@@ -20,9 +20,12 @@ tape('readlink', function (t) {
       process.nextTick(cb, 0, 'hello')
     },
     getattr: function (path, cb) {
-      if (path === '/') return process.nextTick(cb, null, stat({ mode: 'dir', size: 4096 }))
-      if (path === '/hello') return process.nextTick(cb, null, stat({ mode: 'file', size: 11 }))
-      if (path === '/link') return process.nextTick(cb, null, stat({ mode: 'link', size: 5 }))
+      if (path === '/')
+        return process.nextTick(cb, null, stat({ mode: 'dir', size: 4096 }))
+      if (path === '/hello')
+        return process.nextTick(cb, null, stat({ mode: 'file', size: 11 }))
+      if (path === '/link')
+        return process.nextTick(cb, null, stat({ mode: 'link', size: 5 }))
       return process.nextTick(cb, Fuse.ENOENT)
     },
     open: function (path, flags, cb) {
@@ -33,7 +36,7 @@ tape('readlink', function (t) {
       if (!str) return process.nextTick(cb, 0)
       buf.write(str)
       return process.nextTick(cb, str.length)
-    }
+    },
   }
 
   const fuse = new Fuse(mnt, ops, { debug: true })

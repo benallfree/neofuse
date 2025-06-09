@@ -1,10 +1,9 @@
-const { exec } = require('child_process')
-const { unmount } = require('./helpers')
-const tape = require('tape')
+import { exec } from 'child_process'
+import tape from 'tape'
+import { unmount } from './helpers/index.js'
 
-const Fuse = require('../')
-const createMountpoint = require('./fixtures/mnt')
-const stat = require('./fixtures/stat')
+import Fuse from '../index.js'
+import createMountpoint from './fixtures/mnt.js'
 
 const mnt = createMountpoint()
 
@@ -23,14 +22,14 @@ tape('statfs', function (t) {
         favail: 1000000,
         fsid: 1000000,
         flag: 1000000,
-        namemax: 1000000
+        namemax: 1000000,
       })
     },
   }
   const fuse = new Fuse(mnt, ops, { debug: true })
   fuse.mount(function (err) {
     t.error(err, 'no error')
-    exec(`df ${mnt}`, (err) => {
+    exec(`df ${mnt}`, err => {
       t.error(err, 'no error')
       unmount(fuse, function () {
         t.end()

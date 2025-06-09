@@ -1,21 +1,21 @@
-const tape = require('tape')
-const fs = require('fs')
-const path = require('path')
-const concat = require('concat-stream')
+import concat from 'concat-stream'
+import fs from 'fs'
+import path from 'path'
+import tape from 'tape'
 
-const Fuse = require('../')
-const createMountpoint = require('./fixtures/mnt')
-const stat = require('./fixtures/stat')
-const simpleFS = require('./fixtures/simple-fs')
+import Fuse from '../index.js'
+import createMountpoint from './fixtures/mnt.js'
+import simpleFS from './fixtures/simple-fs.js'
+import stat from './fixtures/stat.js'
 
-const { unmount } = require('./helpers')
+import { unmount } from './helpers/index.js'
 const mnt = createMountpoint()
 
 tape('read', function (t) {
   const testFS = simpleFS({
     release: function (path, fd) {
       t.same(fd, 42, 'fd was passed to release')
-    }
+    },
   })
   const fuse = new Fuse(mnt, testFS, { debug: true })
   fuse.mount(function (err) {
@@ -29,17 +29,28 @@ tape('read', function (t) {
         t.error(err, 'no error')
         t.same(buf, Buffer.from('hello world'), 'read file again')
 
-        fs.createReadStream(path.join(mnt, 'test'), { start: 0, end: 4 }).pipe(concat(function (buf) {
-          t.same(buf, Buffer.from('hello'), 'partial read file')
+        fs.createReadStream(path.join(mnt, 'test'), { start: 0, end: 4 }).pipe(
+          concat(function (buf) {
+            t.same(buf, Buffer.from('hello'), 'partial read file')
 
-          fs.createReadStream(path.join(mnt, 'test'), { start: 6, end: 10 }).pipe(concat(function (buf) {
-            t.same(buf, Buffer.from('world'), 'partial read file + start offset')
+            fs.createReadStream(path.join(mnt, 'test'), {
+              start: 6,
+              end: 10,
+            }).pipe(
+              concat(function (buf) {
+                t.same(
+                  buf,
+                  Buffer.from('world'),
+                  'partial read file + start offset'
+                )
 
-            unmount(fuse, function () {
-              t.end()
-            })
-          }))
-        }))
+                unmount(fuse, function () {
+                  t.end()
+                })
+              })
+            )
+          })
+        )
       })
     })
   })
@@ -54,9 +65,12 @@ tape.skip('read timeout does not force unmount', function (t) {
       return process.nextTick(cb, Fuse.ENOENT)
     },
     getattr: function (path, cb) {
-      if (path === '/') return process.nextTick(cb, null, stat({ mode: 'dir', size: 4096 }))
-      if (path === '/test') return process.nextTick(cb, null, stat({ mode: 'file', size: 11 }))
-      if (path === '/timeout') return process.nextTick(cb, null, stat({ mode: 'file', size: 11 }))
+      if (path === '/')
+        return process.nextTick(cb, null, stat({ mode: 'dir', size: 4096 }))
+      if (path === '/test')
+        return process.nextTick(cb, null, stat({ mode: 'file', size: 11 }))
+      if (path === '/timeout')
+        return process.nextTick(cb, null, stat({ mode: 'file', size: 11 }))
       return process.nextTick(cb, Fuse.ENOENT)
     },
     open: function (path, flags, cb) {
@@ -79,7 +93,7 @@ tape.skip('read timeout does not force unmount', function (t) {
         return
       }
       return cb(-2)
-    }
+    },
   }
 
   const fuse = new Fuse(mnt, ops, { debug: false })
@@ -112,5 +126,3 @@ tape.skip('read timeout does not force unmount', function (t) {
     })
   })
 })
-
-

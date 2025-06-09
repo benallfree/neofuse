@@ -1,7 +1,7 @@
-const stat = require('./stat')
-const Fuse = require('../../')
+import Fuse from '../../index.js'
+import stat from './stat.js'
 
-module.exports = function (tests = {}) {
+export default function (tests = {}) {
   return {
     readdir: function (path, cb) {
       if (tests.readdir) tests.readdir(path)
@@ -10,8 +10,10 @@ module.exports = function (tests = {}) {
     },
     getattr: function (path, cb) {
       if (tests.getattr) tests.getattr(path)
-      if (path === '/') return process.nextTick(cb, null, stat({ mode: 'dir', size: 4096 }))
-      if (path === '/test') return process.nextTick(cb, null, stat({ mode: 'file', size: 11 }))
+      if (path === '/')
+        return process.nextTick(cb, null, stat({ mode: 'dir', size: 4096 }))
+      if (path === '/test')
+        return process.nextTick(cb, null, stat({ mode: 'file', size: 11 }))
       return process.nextTick(cb, Fuse.ENOENT)
     },
     open: function (path, flags, cb) {
@@ -28,7 +30,6 @@ module.exports = function (tests = {}) {
       if (!str) return process.nextTick(cb, 0)
       buf.write(str)
       return process.nextTick(cb, str.length)
-    }
+    },
   }
 }
-

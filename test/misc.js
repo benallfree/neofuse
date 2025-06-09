@@ -1,13 +1,18 @@
-const os = require('os')
-const fs = require('fs')
-const tape = require('tape')
-const { spawnSync, exec } = require('child_process')
+import { exec, spawnSync } from 'child_process'
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
+import tape from 'tape'
+import { fileURLToPath } from 'url'
 
-const createMountpoint = require('./fixtures/mnt')
+import createMountpoint from './fixtures/mnt.js'
 
-const Fuse = require('../')
-const { unmount } = require('./helpers')
-const simpleFS = require('./fixtures/simple-fs')
+import Fuse from '../index.js'
+import simpleFS from './fixtures/simple-fs.js'
+import { unmount } from './helpers/index.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const mnt = createMountpoint()
 
@@ -88,21 +93,24 @@ tape('mounting twice without force fails', function (t) {
   })
 })
 
-tape('mounting twice with force fail if mountpoint is not broken', function (t) {
-  const fuse1 = new Fuse(mnt, {}, { force: true, debug: false })
-  const fuse2 = new Fuse(mnt, {}, { force: true, debug: false })
+tape(
+  'mounting twice with force fail if mountpoint is not broken',
+  function (t) {
+    const fuse1 = new Fuse(mnt, {}, { force: true, debug: false })
+    const fuse2 = new Fuse(mnt, {}, { force: true, debug: false })
 
-  fuse1.mount(function (err) {
-    t.error(err, 'no error')
-    t.pass('works')
-    fuse2.mount(function (err) {
-      t.true(err, 'cannot mount over existing mountpoint')
-      unmount(fuse1, function () {
-        t.end()
+    fuse1.mount(function (err) {
+      t.error(err, 'no error')
+      t.pass('works')
+      fuse2.mount(function (err) {
+        t.true(err, 'cannot mount over existing mountpoint')
+        unmount(fuse1, function () {
+          t.end()
+        })
       })
     })
-  })
-})
+  }
+)
 
 tape('mounting over a broken mountpoint with force succeeds', function (t) {
   createBrokenMountpoint(mnt)
@@ -117,27 +125,33 @@ tape('mounting over a broken mountpoint with force succeeds', function (t) {
   })
 })
 
-tape('mounting without mkdir option and a nonexistent mountpoint fails', function (t) {
-  const nonexistentMnt = createMountpoint({ doNotCreate: true })
+tape(
+  'mounting without mkdir option and a nonexistent mountpoint fails',
+  function (t) {
+    const nonexistentMnt = createMountpoint({ doNotCreate: true })
 
-  const fuse = new Fuse(nonexistentMnt, {}, { debug: false })
-  fuse.mount(function (err) {
-    t.true(err, 'could not mount')
-    t.end()
-  })
-})
-
-tape('mounting with mkdir option and a nonexistent mountpoint succeeds', function (t) {
-  const nonexistentMnt = createMountpoint({ doNotCreate: true })
-
-  const fuse = new Fuse(nonexistentMnt, {}, { debug: false, mkdir: true })
-  fuse.mount(function (err) {
-    t.error(err, 'no error')
-    unmount(fuse, function (err) {
+    const fuse = new Fuse(nonexistentMnt, {}, { debug: false })
+    fuse.mount(function (err) {
+      t.true(err, 'could not mount')
       t.end()
     })
-  })
-})
+  }
+)
+
+tape(
+  'mounting with mkdir option and a nonexistent mountpoint succeeds',
+  function (t) {
+    const nonexistentMnt = createMountpoint({ doNotCreate: true })
+
+    const fuse = new Fuse(nonexistentMnt, {}, { debug: false, mkdir: true })
+    fuse.mount(function (err) {
+      t.error(err, 'no error')
+      unmount(fuse, function (err) {
+        t.end()
+      })
+    })
+  }
+)
 
 tape('(osx only) unmount with Finder open succeeds', function (t) {
   if (os.platform() !== 'darwin') return t.end()
@@ -193,16 +207,23 @@ tape('static unmounting', function (t) {
   t.end()
 })
 
-function createBrokenMountpoint (mnt) {
-  spawnSync(process.execPath, ['-e', `
-    const Fuse = require('..')
+function createBrokenMountpoint(mnt) {
+  spawnSync(
+    process.execPath,
+    [
+      '-e',
+      `
+    import Fuse from '../index.js'
     const mnt = ${JSON.stringify(mnt)}
     const fuse = new Fuse(mnt, {}, { force: true, debug: false })
     fuse.mount(() => {
       process.exit(0)
     })
-  `], {
-    cwd: __dirname,
-    stdio: 'inherit'
-  })
+  `,
+    ],
+    {
+      cwd: __dirname,
+      stdio: 'inherit',
+    }
+  )
 }
