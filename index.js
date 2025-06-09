@@ -950,12 +950,13 @@ function getStatfsArray(statfs) {
 }
 
 function setDoubleInt(arr, idx, num) {
-  arr[idx] = num % 4294967296
-  arr[idx + 1] = (num - arr[idx]) / 4294967296
+  const bigNum = BigInt(num)
+  arr[idx] = Number(bigNum & 0xffffffffn) // Lower 32 bits
+  arr[idx + 1] = Number(bigNum >> 32n) // Upper 32 bits
 }
 
 function getDoubleArg(a, b) {
-  return a + b * 4294967296
+  return Number(BigInt(a) + (BigInt(b) << 32n))
 }
 
 function toDateMS(st) {
