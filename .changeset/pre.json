@@ -5,6 +5,7 @@
     "neofuse": "0.0.1"
   },
   "changesets": [
+    "curly-rivers-guess",
     "itchy-trains-start",
     "little-walls-doubt",
     "modern-rocks-double"
