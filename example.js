@@ -1,4 +1,4 @@
-import Fuse from './'
+import Fuse from './index.js'
 
 const ops = {
   readdir: function (path, cb) {
