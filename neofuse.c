@@ -72,10 +72,10 @@ napi_status napi_detach_arraybuffer(napi_env env, napi_value buf);
 #define FUSE_METHOD_VOID(name, callbackArgs, signalArgs, signature, callBlk, callbackBlk) \
   FUSE_METHOD(name, callbackArgs, signalArgs, signature, callBlk, callbackBlk, {})
 
-#define FUSE_UINT64_TO_INTS_ARGV(n, pos)            \
-  uint32_t low##pos = n % 4294967296;               \
-  uint32_t high##pos = (n - low##pos) / 4294967296; \
-  napi_create_uint32(env, low##pos, &(argv[pos]));  \
+#define FUSE_UINT64_TO_INTS_ARGV(n, pos)           \
+  uint32_t low##pos = (uint32_t)(n & 0xFFFFFFFF);  \
+  uint32_t high##pos = (uint32_t)(n >> 32);        \
+  napi_create_uint32(env, low##pos, &(argv[pos])); \
   napi_create_uint32(env, high##pos, &(argv[pos + 1]));
 
 // Opcodes
@@ -195,7 +195,7 @@ static uint64_t uint32s_to_uint64(uint32_t **ints)
 {
   uint64_t low = *((*ints)++);
   uint64_t high = *((*ints)++);
-  return high * 4294967296 + low;
+  return (high << 32) | low;
 }
 
 static void uint32s_to_timespec(struct timespec *ts, uint32_t **ints)
