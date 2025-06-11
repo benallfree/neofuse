@@ -213,7 +213,7 @@ function createBrokenMountpoint(mnt) {
     [
       '-e',
       `
-    import Fuse from '../index.js'
+    import Fuse from '../dist/index.js'
     const mnt = ${JSON.stringify(mnt)}
     const fuse = new Fuse(mnt, {}, { force: true, debug: false })
     fuse.mount(() => {

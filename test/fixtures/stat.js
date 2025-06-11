@@ -12,7 +12,7 @@ export default function (st) {
           : st.mode === 'link'
             ? 41453
             : st.mode,
-    uid: st.uid !== undefined ? st.uid : process.getuid(),
-    gid: st.gid !== undefined ? st.gid : process.getgid(),
+    uid: st.uid !== undefined ? st.uid : (process.getuid ? process.getuid() : 0),
+    gid: st.gid !== undefined ? st.gid : (process.getgid ? process.getgid() : 0),
   }
 }
