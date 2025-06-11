@@ -37,8 +37,13 @@ jobs:
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
 
-      - name: Install FUSE
-        run: sudo apt-get update && sudo apt-get install -y fuse
+      - name: Install FUSE (Ubuntu)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libfuse-dev
+
+      - name: Install FUSE (macOS)
+        if: runner.os == 'macOS'
+        run: brew install macfuse
 
       - name: Run Claude Code
         id: claude
