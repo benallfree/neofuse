@@ -29,9 +29,17 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Run Claude Code
         id: claude
         uses: anthropics/claude-code-action@beta
         with:
+          allowed_tools: 'Bash(bun:*)'
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-
