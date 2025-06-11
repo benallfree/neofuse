@@ -2,29 +2,37 @@ name: Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        
+
     runs-on: ${{ matrix.os }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
+      - name: Install FUSE (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y libfuse-dev
+
+      - name: Install FUSE (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install macfuse
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-          
+
       - name: Install dependencies
         run: bun install
-        
+
       - name: Run tests
         run: bun run test
