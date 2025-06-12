@@ -28,8 +28,8 @@ jobs:
       - name: Install FUSE (macOS)
         if: env.ACT != 'true'
         run: |
-          # brew uninstall --cask macfuse || true
-          # brew install --cask macfuse@dev
+          brew uninstall --cask macfuse || true
+          brew install --cask macfuse@dev
 
       - name: Setup Bun
         if: env.ACT != 'true'
