@@ -1,0 +1,45 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [macos-latest]
+        arch: [arm64]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Homebrew (macOS)
+        if: env.ACT != 'true'
+        run: |
+          if ! command -v brew &> /dev/null; then
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          fi
+          brew update
+
+      - name: Install FUSE (macOS)
+        if: env.ACT != 'true'
+        run: |
+          # brew uninstall --cask macfuse || true
+          # brew install --cask macfuse@dev
+
+      - name: Setup Bun
+        if: env.ACT != 'true'
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      # Test step (runs everywhere)
+      - name: Run build
+        run: bun run build
