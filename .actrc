@@ -1,0 +1,4 @@
+-P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest
+-P macos-latest=-self-hosted
+--container-architecture=linux/amd64
+--concurrent-jobs=1

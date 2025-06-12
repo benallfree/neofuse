@@ -11,22 +11,34 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-
     runs-on: ${{ matrix.os }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Running for ${{ matrix.os }}
+        run: echo "ACT is ${{ env.ACT }} and matrix.os is ${{ matrix.os }}"
 
       - name: Install FUSE (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get update && sudo apt-get install -y libfuse-dev
 
+      - name: Setup Homebrew (macOS)
+        if: matrix.os == 'macos-latest' && env.ACT != 'true'
+        run: |
+          if ! command -v brew &> /dev/null; then
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          fi
+          brew update
+
       - name: Install FUSE (macOS)
-        if: matrix.os == 'macos-latest'
-        run: brew install macfuse
+        if: matrix.os == 'macos-latest' && env.ACT != 'true'
+        run: |
+          # brew uninstall --cask macfuse || true
+          # brew install --cask macfuse@dev
 
       - name: Setup Bun
+        if: matrix.os != 'macos-latest' || env.ACT != 'true'
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
@@ -34,5 +46,6 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      # Test step (runs everywhere)
       - name: Run tests
         run: bun run test
