@@ -7,7 +7,13 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const binding = nodeGypBuild(__dirname)
+// recursively find the project root
+let projectRoot = __dirname
+while (!fs.existsSync(path.join(projectRoot, 'package.json'))) {
+  projectRoot = path.resolve(projectRoot, '..')
+}
+
+const binding = nodeGypBuild(projectRoot)
 
 const IS_OSX = os.platform() === 'darwin'
 const OSX_FOLDER_ICON =
